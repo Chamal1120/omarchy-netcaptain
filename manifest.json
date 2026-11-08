@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "omarchy-netcaptain",
   "name": "NetCaptain",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "author": "Chamal1120",
   "license": "MIT",
   "description": "Daily, monthly, and per-connection network data usage with data limits, stored in a local SQLite database.",

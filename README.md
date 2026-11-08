@@ -84,8 +84,60 @@ It makes no network requests and needs only Python 3's standard library and
 
 ## Development
 
+Keep the repository wherever you work on code and link it into the plugins
+folder. Omarchy follows the symlink, so the shell loads your working copy:
+
+```bash
+git clone https://github.com/Chamal1120/omarchy-netcaptain.git ~/Projects/omarchy-netcaptain
+ln -s ~/Projects/omarchy-netcaptain ~/.config/omarchy/plugins/omarchy-netcaptain
+omarchy plugin enable omarchy-netcaptain
+```
+
+If you already installed it with `omarchy plugin add`, remove that copy first
+(`omarchy plugin remove omarchy-netcaptain`), since the link uses the same
+folder name.
+
+The shell's own file watcher doesn't follow symlinks, so edits in your
+working copy aren't picked up on their own. Run the watcher while you work; it
+restarts the shell on every save and prints any QML load error:
+
+```bash
+scripts/dev-watch
+```
+
+Pull updates with `git pull` in the repository rather than
+`omarchy plugin update`. Don't add symlinks inside the repository:
+`omarchy plugin validate` rejects them.
+
+### Layout
+
+| Path | What it is |
+|---|---|
+| `Panel.qml` | Entry point: the bar icon, all popup state and actions, the collector process, keyboard handling, and the order of the sections |
+| `ui/` | One component per popup section, each taking the Panel as `panel` |
+| `ui/HeroSection.qml` | Connection name, kind icon, live rate |
+| `ui/TodaySection.qml`, `ui/StatTile.qml` | Today's download and upload |
+| `ui/LimitsSection.qml`, `ui/LimitRow.qml`, `ui/LimitEditor.qml` | Data limits and their editor |
+| `ui/HistoryToggle.qml`, `ui/HistorySection.qml` | The collapsible history: range and network pickers, readout, totals |
+| `ui/UsageChart.qml` | The day/month bar chart |
+| `ui/ConnectionList.qml` | Networks used on the selected day or month |
+| `ui/PlainText.qml` | Text that never renders rich text; set `owner` to the Panel for the bar's colour and font |
+| `Model.js` | Pure formatting and series helpers, tested without QML |
+| `netcaptain.py` | Collector: samples byte counters into SQLite and prints a JSON summary |
+| `i18n/en.json` | UI strings |
+
+State lives in `Panel.qml` and flows down: components read `panel.<property>`
+and call `panel.<action>()` rather than keeping state of their own, so a new
+section is a new file in `ui/` plus one line in `Panel.qml`. Logic that doesn't
+need QML belongs in `Model.js`, where `tests/model.test.mjs` can cover it.
+
+### Checks
+
+Run them before committing:
+
 ```bash
 python3 -I -m unittest discover -s tests
 node --test tests
+scripts/qmllint
 omarchy plugin validate .
 ```

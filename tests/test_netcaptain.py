@@ -1,5 +1,6 @@
 """Run with: python3 -I -m unittest discover -s tests (from the plugin folder)."""
 
+import glob
 import importlib.util
 import json
 import os
@@ -374,14 +375,22 @@ class MarkupSafetyTest(unittest.TestCase):
     no Text in the panel may run in AutoText mode."""
 
     def test_every_text_sink_is_plain(self):
-        with open(os.path.join(ROOT, "Panel.qml")) as handle:
-            qml = handle.read()
-        bare = [m.start() for m in re.finditer(r"(?<![\w.])Text\s*\{", qml)]
-        self.assertEqual(len(bare), 1, "only the PlainText component may declare Text")
-        self.assertIn("component PlainText: Text {\n    textFormat: Text.PlainText", qml)
-        self.assertNotIn("RichText", qml)
-        self.assertNotIn("StyledText", qml)
-
+        files = [os.path.join(ROOT, "Panel.qml")] + sorted(glob.glob(os.path.join(ROOT, "ui", "*.qml")))
+        self.assertGreater(len(files), 1)
+        plain = os.path.join(ROOT, "ui", "PlainText.qml")
+        for path in files:
+            with open(path) as handle:
+                qml = handle.read()
+            name = os.path.relpath(path, ROOT)
+            bare = re.findall(r"(?<![\w.])Text\s*\{", qml)
+            if path == plain:
+                self.assertEqual(len(bare), 1, name)
+                self.assertRegex(qml, r"\nText \{\n(  .*\n)*?  textFormat: Text\.PlainText\n")
+            else:
+                self.assertEqual(bare, [], "%s: use PlainText instead of Text" % name)
+                self.assertNotIn("textFormat", qml, "%s: only PlainText sets textFormat" % name)
+            self.assertNotIn("RichText", qml, name)
+            self.assertNotIn("StyledText", qml, name)
 
 if __name__ == "__main__":
     unittest.main()

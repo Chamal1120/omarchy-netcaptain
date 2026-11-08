@@ -1,0 +1,27 @@
+#!/bin/bash
+# Reload the plugin in the running Omarchy shell whenever a file changes.
+#
+# The shell watches ~/.config/omarchy/plugins itself, but inotify does not
+# follow symlinks, so a plugin linked in from another folder is never
+# reloaded on its own. Run this from the repository while you work.
+#
+# It restarts the whole shell: `omarchy-shell shell rescanPlugins` keeps the
+# compiled QML cached, so edits would not show. Load errors are printed here.
+set -euo pipefail
+
+command -v inotifywait >/dev/null || { echo "dev-watch: inotifywait not found (pacman -S inotify-tools)" >&2; exit 1; }
+
+repo=$(cd "$(dirname "$0")/.." && pwd)
+echo "Watching $repo; Ctrl+C to stop."
+
+inotifywait -m -r -q -e close_write,create,delete,move \
+  --exclude '/(\.git|__pycache__)/' --format '%w%f' "$repo" |
+while read -r path; do
+  # Wait out the rest of a burst (an editor save, a git checkout) before reloading once.
+  while read -r -t 0.3 more; do path=$more; done
+  echo "$(date +%T) reload (${path#"$repo"/})"
+  omarchy-restart-shell >/dev/null 2>&1 || echo "dev-watch: shell restart failed" >&2
+  sleep 2
+  qs log -p "${OMARCHY_PATH:-/usr/share/omarchy}/shell" 2>/dev/null |
+    grep -F "Plugin widget omarchy-netcaptain failed" -A1 | tail -n 2 || true
+done

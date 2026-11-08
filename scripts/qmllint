@@ -1,0 +1,27 @@
+#!/bin/bash
+# Lint the plugin's QML against the installed Omarchy shell's qs.* modules.
+#
+# Only problems that break loading are shown (unknown types, bad imports,
+# missing properties on our own components). qmllint can't see the members of
+# the shell's Style.font object, and the components reach the Panel's
+# properties unqualified, so those warnings are filtered out.
+set -euo pipefail
+
+qmllint=$(command -v qmllint || echo /usr/lib/qt6/bin/qmllint)
+[[ -x $qmllint ]] || { echo "qmllint: not found (pacman -S qt6-declarative)" >&2; exit 1; }
+
+repo=$(cd "$(dirname "$0")/.." && pwd)
+shell_dir="${OMARCHY_PATH:-/usr/share/omarchy}/shell"
+imports=$(mktemp -d)
+trap 'rm -rf "$imports"' EXIT
+ln -s "$shell_dir" "$imports/qs"
+
+cd "$repo"
+output=$("$qmllint" -I "$imports" -I /usr/lib/qt6/qml Panel.qml ui/*.qml 2>&1 || true)
+problems=$(grep -E '^(Warning|Error):' <<<"$output" | grep -v -E '\[unqualified\]|on type "QObject"' || true)
+
+if [[ -n $problems ]]; then
+  echo "$problems"
+  exit 1
+fi
+echo "QML OK"
