@@ -15,7 +15,7 @@ ROOT = os.path.dirname(HERE)
 
 def load_module(env):
     os.environ.update(env)
-    spec = importlib.util.spec_from_file_location("netusage", os.path.join(ROOT, "netusage.py"))
+    spec = importlib.util.spec_from_file_location("netcaptain", os.path.join(ROOT, "netcaptain.py"))
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -32,9 +32,9 @@ class FakeSystem:
         self.set_boot("boot-a")
         self.set_route("wlan0")
         self.mod = load_module({
-            "NETUSAGE_SYS_NET": self.net,
-            "NETUSAGE_PROC_ROUTE": self.route,
-            "NETUSAGE_BOOT_ID": self.boot,
+            "NETCAPTAIN_SYS_NET": self.net,
+            "NETCAPTAIN_PROC_ROUTE": self.route,
+            "NETCAPTAIN_BOOT_ID": self.boot,
         })
         self.conn = self.mod.open_db(os.path.join(base, "usage.db"))
 
@@ -317,13 +317,13 @@ class CommandLineTest(unittest.TestCase):
 
     def setUp(self):
         self.dir = tempfile.TemporaryDirectory()
-        self.env = dict(os.environ, NETUSAGE_DB=os.path.join(self.dir.name, "usage.db"))
+        self.env = dict(os.environ, NETCAPTAIN_DB=os.path.join(self.dir.name, "usage.db"))
 
     def tearDown(self):
         self.dir.cleanup()
 
     def run_cli(self, *args):
-        return subprocess.run([sys.executable, "-I", os.path.join(ROOT, "netusage.py"), *args],
+        return subprocess.run([sys.executable, "-I", os.path.join(ROOT, "netcaptain.py"), *args],
                               capture_output=True, text=True, env=self.env, timeout=30)
 
     def limits(self):
@@ -349,7 +349,7 @@ class CommandLineTest(unittest.TestCase):
         for bad in (("5", "-3"), ("abc", "none"), ("5", "1e3"), ("5", "5", "40")):
             result = self.run_cli("set-limits", "Home", *bad)
             self.assertEqual(result.returncode, 2, bad)
-            self.assertIn("netusage:", result.stderr)
+            self.assertIn("netcaptain:", result.stderr)
         self.assertEqual(self.limits(), [])
 
     def test_unknown_command(self):

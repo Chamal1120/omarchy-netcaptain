@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-"""Network data usage collector for the chamal.netusage Omarchy shell plugin.
+"""Network data usage collector for the omarchy-netcaptain Omarchy shell plugin.
 
 Samples the kernel's per-interface byte counters, adds the difference since the
 last sample to today's row for the connection each interface is on, and prints
 a JSON summary for the bar widget.
 
-    netusage.py collect [--no-notify]
+    netcaptain.py collect [--no-notify]
         sample, warn about data limits, then print the summary
-    netusage.py summary
+    netcaptain.py summary
         print the summary without sampling
-    netusage.py set-limit <connection> <daily|monthly> <bytes|none>
+    netcaptain.py set-limit <connection> <daily|monthly> <bytes|none>
         set or clear one of a network's limits, then print the summary
-    netusage.py set-limits <connection> <daily bytes|none> <monthly bytes|none> [billing day]
+    netcaptain.py set-limits <connection> <daily bytes|none> <monthly bytes|none> [billing day]
         set or clear both at once; the billing day (1-31, default 1) is the day
         of the month the monthly limit resets
 
@@ -21,8 +21,8 @@ billing day; in a month too short for that day it starts on the last day. A
 notification goes out once when a day's or month's usage reaches 90% of its
 limit, and once more when it passes the limit.
 
-The database lives at $XDG_DATA_HOME/omarchy-netusage/usage.db unless
-NETUSAGE_DB points somewhere else. Only Python's standard library is used.
+The database lives at $XDG_DATA_HOME/omarchy-netcaptain/usage.db unless
+NETCAPTAIN_DB points somewhere else. Only Python's standard library is used.
 """
 
 import calendar
@@ -35,9 +35,9 @@ import subprocess
 import sys
 import time
 
-SYS_NET = os.environ.get("NETUSAGE_SYS_NET", "/sys/class/net")
-PROC_ROUTE = os.environ.get("NETUSAGE_PROC_ROUTE", "/proc/net/route")
-BOOT_ID = os.environ.get("NETUSAGE_BOOT_ID", "/proc/sys/kernel/random/boot_id")
+SYS_NET = os.environ.get("NETCAPTAIN_SYS_NET", "/sys/class/net")
+PROC_ROUTE = os.environ.get("NETCAPTAIN_PROC_ROUTE", "/proc/net/route")
+BOOT_ID = os.environ.get("NETCAPTAIN_BOOT_ID", "/proc/sys/kernel/random/boot_id")
 
 NAME_MAX = 64
 DAYS_KEPT_IN_SUMMARY = 31
@@ -85,11 +85,19 @@ CREATE TABLE IF NOT EXISTS meta (
 
 
 def db_path():
-    override = os.environ.get("NETUSAGE_DB")
+    override = os.environ.get("NETCAPTAIN_DB")
     if override:
         return override
     base = os.environ.get("XDG_DATA_HOME") or os.path.join(os.path.expanduser("~"), ".local", "share")
-    return os.path.join(base, "omarchy-netusage", "usage.db")
+    path = os.path.join(base, "omarchy-netcaptain", "usage.db")
+    # Before the rename the plugin was chamal.netusage; carry its history over.
+    legacy = os.path.join(base, "omarchy-netusage")
+    if not os.path.exists(os.path.dirname(path)) and os.path.isdir(legacy):
+        try:
+            os.rename(legacy, os.path.dirname(path))
+        except OSError:
+            pass
+    return path
 
 
 def clean_name(value):
@@ -349,9 +357,9 @@ def send_notifications(alerts):
         urgency = "critical" if alert["level"] >= 100 else "normal"
         # argv only, never a shell: the connection name is network-supplied.
         for command in (
-            ["omarchy-notification-send", "--app-name", "Network Usage", "-g", "\U000f04e2",
+            ["omarchy-notification-send", "--app-name", "NetCaptain", "-g", "\U000f04e2",
              "-u", urgency, headline, body],
-            ["notify-send", "-a", "Network Usage", "-u", urgency, headline, body],
+            ["notify-send", "-a", "NetCaptain", "-u", urgency, headline, body],
         ):
             try:
                 result = subprocess.run(command, capture_output=True, timeout=10, check=False)
@@ -557,7 +565,7 @@ def summary(conn, today=None, devices=None):
     }
 
 
-USAGE = ("usage: netusage.py collect [--no-notify] | summary"
+USAGE = ("usage: netcaptain.py collect [--no-notify] | summary"
          " | set-limit <connection> <daily|monthly> <bytes|none>"
          " | set-limits <connection> <daily bytes|none> <monthly bytes|none> [billing day]")
 
@@ -591,7 +599,7 @@ def main(argv):
                     if cycle_day is not None:
                         set_cycle_day(conn, args[1], cycle_day)
             except ValueError as error:
-                print("netusage: %s" % error, file=sys.stderr)
+                print("netcaptain: %s" % error, file=sys.stderr)
                 return 2
         print(json.dumps(summary(conn, devices=devices), separators=(",", ":")))
         sys.stdout.flush()  # the panel updates before the notification goes out

@@ -1,4 +1,4 @@
-# Network Usage
+# NetCaptain
 
 An Omarchy shell bar widget that tracks how much data you download and upload,
 per day, per month, and per connection.
@@ -52,17 +52,17 @@ Keys in the popup: `←`/`→` move along the chart, `d` days, `m` months,
 omarchy plugin add https://github.com/Chamal1120/omarchy-netcaptain.git --enable
 ```
 
-Update it later with `omarchy plugin update chamal.netusage`. It needs Python 3
+Update it later with `omarchy plugin update omarchy-netcaptain`. It needs Python 3
 and NetworkManager, both standard on Omarchy.
 
 ## How it measures
 
-`netusage.py` reads the kernel byte counters in `/sys/class/net/*/statistics`
+`netcaptain.py` reads the kernel byte counters in `/sys/class/net/*/statistics`
 for hardware interfaces (bridges, Docker, veths and VPN tunnels are skipped, as
 their traffic is already counted on the physical link) and adds the change
 since the last sample to the connection NetworkManager reports on that
 interface. Limits and the warnings already sent are kept in the same database. Data is stored in SQLite at
-`~/.local/share/omarchy-netusage/usage.db`.
+`~/.local/share/omarchy-netcaptain/usage.db`.
 
 Sampling runs only while the shell is running. Traffic between samples on the
 same boot is still caught on the next sample. Traffic from a boot that ended
@@ -79,7 +79,7 @@ It makes no network requests and needs only Python 3's standard library and
 | `notifyLimits` | `true` | Notify at 90% and when a data limit is reached |
 
 ```json
-{ "id": "chamal.netusage", "refreshIntervalSec": 60 }
+{ "id": "omarchy-netcaptain", "refreshIntervalSec": 60 }
 ```
 
 ## Development

@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "id": "chamal.netusage",
-  "name": "Network Usage",
-  "version": "0.3.0",
+  "id": "omarchy-netcaptain",
+  "name": "NetCaptain",
+  "version": "0.4.0",
   "author": "Chamal1120",
   "license": "MIT",
   "description": "Daily, monthly, and per-connection network data usage with data limits, stored in a local SQLite database.",
@@ -13,10 +13,11 @@
     "barWidget": "Panel.qml"
   },
   "barWidget": {
-    "displayName": "Network Usage",
+    "displayName": "NetCaptain",
     "description": "Download and upload per day, month, and connection",
     "category": "System",
     "aliases": [
+      "network usage",
       "data usage",
       "bandwidth",
       "traffic"

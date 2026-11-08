@@ -10,19 +10,19 @@ import "Model.js" as Model
 // and upload on the active connection, a day/month history chart, and the
 // per-connection breakdown for whichever bar of the chart is selected.
 //
-// netusage.py (next to this file) samples the kernel's byte counters into a
+// netcaptain.py (next to this file) samples the kernel's byte counters into a
 // SQLite database every `refreshIntervalSec` seconds and answers with a JSON
 // summary. Sampling only happens while the shell runs; traffic in between is
 // picked up by the next sample on the same boot.
 Panel {
   id: root
-  moduleName: "chamal.netusage"
-  ipcTarget: "chamal.netusage"
+  moduleName: "omarchy-netcaptain"
+  ipcTarget: "omarchy-netcaptain"
 
   Commons.Translations { id: strings; directory: Qt.resolvedUrl("i18n") }
 
   readonly property int intervalSec: Model.clampInterval(setting("refreshIntervalSec", 60))
-  readonly property string scriptPath: decodeURIComponent(String(Qt.resolvedUrl("netusage.py")).replace(/^file:\/\//, ""))
+  readonly property string scriptPath: decodeURIComponent(String(Qt.resolvedUrl("netcaptain.py")).replace(/^file:\/\//, ""))
 
   property var summary: null
   property string error: ""
@@ -192,7 +192,7 @@ Panel {
   function reportError(text) {
     var message = String(text || "").trim()
     if (message === "") return
-    console.warn("chamal.netusage", message.slice(0, 500))
+    console.warn("omarchy-netcaptain", message.slice(0, 500))
     root.error = message.split("\n").pop().slice(0, 200)
   }
 
