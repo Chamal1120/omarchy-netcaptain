@@ -46,6 +46,15 @@ and the *All* view use calendar months.
 Keys in the popup: `←`/`→` move along the chart, `d` days, `m` months,
 `a` cycle the chips, `l` edit limits, `↑`/`↓` then `Enter` pick a network, `r` refresh, `Tab` next panel, `h` show or hide history, `Esc` close. The chart keys open History if it is closed.
 
+## Install
+
+```bash
+omarchy plugin add https://github.com/Chamal1120/omarchy-netcaptain.git --enable
+```
+
+Update it later with `omarchy plugin update chamal.netusage`. It needs Python 3
+and NetworkManager, both standard on Omarchy.
+
 ## How it measures
 
 `netusage.py` reads the kernel byte counters in `/sys/class/net/*/statistics`
