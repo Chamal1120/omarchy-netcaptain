@@ -52,8 +52,26 @@ Keys in the popup: `←`/`→` move along the chart, `d` days, `m` months,
 omarchy plugin add https://github.com/Chamal1120/omarchy-netcaptain.git --enable
 ```
 
-Update it later with `omarchy plugin update omarchy-netcaptain`. It needs Python 3
+Update it later with `omarchy plugin update io.github.chamal1120.netcaptain`. It needs Python 3
 and NetworkManager, both standard on Omarchy.
+
+Versions before 0.5.0 used the ID `omarchy-netcaptain`. If you have one of
+those installed, run `omarchy plugin remove omarchy-netcaptain`, then add it
+again with the command above. Your usage history and limits are kept.
+
+## Remove
+
+```bash
+omarchy plugin remove io.github.chamal1120.netcaptain
+```
+
+This removes the plugin and its bar icon. Your usage history and data limits
+stay in `~/.local/share/omarchy-netcaptain/` in case you reinstall. To delete
+them as well:
+
+```bash
+rm -rf ~/.local/share/omarchy-netcaptain
+```
 
 ## How it measures
 
@@ -79,7 +97,7 @@ It makes no network requests and needs only Python 3's standard library and
 | `notifyLimits` | `true` | Notify at 90% and when a data limit is reached |
 
 ```json
-{ "id": "omarchy-netcaptain", "refreshIntervalSec": 60 }
+{ "id": "io.github.chamal1120.netcaptain", "refreshIntervalSec": 60 }
 ```
 
 ## Development
@@ -89,12 +107,12 @@ folder. Omarchy follows the symlink, so the shell loads your working copy:
 
 ```bash
 git clone https://github.com/Chamal1120/omarchy-netcaptain.git ~/Projects/omarchy-netcaptain
-ln -s ~/Projects/omarchy-netcaptain ~/.config/omarchy/plugins/omarchy-netcaptain
-omarchy plugin enable omarchy-netcaptain
+ln -s ~/Projects/omarchy-netcaptain ~/.config/omarchy/plugins/io.github.chamal1120.netcaptain
+omarchy plugin enable io.github.chamal1120.netcaptain
 ```
 
 If you already installed it with `omarchy plugin add`, remove that copy first
-(`omarchy plugin remove omarchy-netcaptain`), since the link uses the same
+(`omarchy plugin remove io.github.chamal1120.netcaptain`), since the link uses the same
 folder name.
 
 The shell's own file watcher doesn't follow symlinks, so edits in your

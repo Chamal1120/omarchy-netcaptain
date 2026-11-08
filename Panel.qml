@@ -17,8 +17,8 @@ import "ui"
 // picked up by the next sample on the same boot.
 Panel {
   id: root
-  moduleName: "omarchy-netcaptain"
-  ipcTarget: "omarchy-netcaptain"
+  moduleName: "io.github.chamal1120.netcaptain"
+  ipcTarget: "io.github.chamal1120.netcaptain"
 
   Commons.Translations { id: translations; directory: Qt.resolvedUrl("i18n") }
 
@@ -197,7 +197,7 @@ Panel {
   function reportError(text) {
     var message = String(text || "").trim()
     if (message === "") return
-    console.warn("omarchy-netcaptain", message.slice(0, 500))
+    console.warn("io.github.chamal1120.netcaptain", message.slice(0, 500))
     root.error = message.split("\n").pop().slice(0, 200)
   }
 

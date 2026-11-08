@@ -23,5 +23,5 @@ while read -r path; do
   omarchy-restart-shell >/dev/null 2>&1 || echo "dev-watch: shell restart failed" >&2
   sleep 2
   qs log -p "${OMARCHY_PATH:-/usr/share/omarchy}/shell" 2>/dev/null |
-    grep -F "Plugin widget omarchy-netcaptain failed" -A1 | tail -n 2 || true
+    grep -F "Plugin widget io.github.chamal1120.netcaptain failed" -A1 | tail -n 2 || true
 done
