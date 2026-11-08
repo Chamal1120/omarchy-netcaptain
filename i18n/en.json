@@ -1,0 +1,53 @@
+{
+  "tooltip.today": "Today: ↓ %1  ↑ %2",
+  "hero.disconnected": "Not connected",
+  "hero.activeConnection": "Active connection",
+  "hero.rate": "↓ %1  ↑ %2",
+  "stat.downloadToday": "Download today",
+  "stat.uploadToday": "Upload today",
+  "stat.thisMonth": "%1 this month",
+  "range.days": "Days",
+  "range.months": "Months",
+  "scope.active": "This network",
+  "scope.all": "All",
+  "total.days": {
+    "one": "Last %1 day",
+    "other": "Last %1 days"
+  },
+  "total.months": {
+    "one": "Last %1 month",
+    "other": "Last %1 months"
+  },
+  "connections.header": "Connections · %1",
+  "connections.none": "No traffic recorded.",
+  "limits.header": "Data limits · %1",
+  "limits.set": "Set limits",
+  "limits.edit": "Edit",
+  "limits.today": "Today",
+  "limits.month": "This month",
+  "limits.none": "No limit",
+  "limits.of": "%1 of %2 · %3%",
+  "limits.over": "%1 over the %2 limit",
+  "limits.daily": "Daily limit",
+  "limits.monthly": "Monthly limit",
+  "limits.placeholder": "No limit, e.g. 2 GB",
+  "limits.hint": "Download and upload combined. You are notified at 90% and when a limit is reached.",
+  "limits.invalid": "Enter an amount like 500 MB or 2 GB, or leave it empty for no limit.",
+  "limits.cancel": "Cancel",
+  "limits.save": "Save",
+  "limits.cycle": "This cycle · %1",
+  "limits.range": "%1 – %2",
+  "limits.billingDay": "Billing day",
+  "limits.billingDayHint": "Monthly limit resets on this day",
+  "limits.invalidCycle": "Billing day must be a number from 1 to 31.",
+  "chart.percent": "%1% of limit",
+  "chart.noDailyLimit": "No daily limit · set one to see bars",
+  "chart.noMonthlyLimit": "No monthly limit · set one to see bars",
+  "chart.pickNetwork": "Limits are per network · pick one to see bars",
+  "total.cycles": {
+    "one": "Last %1 billing cycle",
+    "other": "Last %1 billing cycles"
+  },
+  "range.cycles": "Cycles",
+  "history.title": "History"
+}
